@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FLIP 7 - Neon Arcade</title>
+    <title>FLIP 7 - Official Rules</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap"
         rel="stylesheet">
@@ -40,7 +40,6 @@
             flex-direction: column;
         }
 
-        /* Background */
         .bg-container {
             position: fixed;
             top: 0;
@@ -48,8 +47,7 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            background:
-                radial-gradient(ellipse at 20% 20%, rgba(0, 255, 170, 0.08) 0%, transparent 50%),
+            background: radial-gradient(ellipse at 20% 20%, rgba(0, 255, 170, 0.08) 0%, transparent 50%),
                 radial-gradient(ellipse at 80% 80%, rgba(255, 0, 170, 0.08) 0%, transparent 50%),
                 linear-gradient(180deg, #0a0a12 0%, #0f0f1a 100%);
         }
@@ -60,14 +58,12 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image:
-                linear-gradient(rgba(0, 255, 170, 0.03) 1px, transparent 1px),
+            background-image: linear-gradient(rgba(0, 255, 170, 0.03) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0, 255, 170, 0.03) 1px, transparent 1px);
             background-size: 50px 50px;
             z-index: -1;
         }
 
-        /* Header */
         header {
             text-align: center;
             padding: 15px 10px;
@@ -89,7 +85,6 @@
             filter: drop-shadow(0 0 20px rgba(0, 255, 170, 0.5));
         }
 
-        /* Main Layout */
         .game-container {
             display: flex;
             flex-direction: column;
@@ -102,7 +97,6 @@
             overflow-y: auto;
         }
 
-        /* Desktop Layout Override */
         @media (min-width: 901px) {
             .game-container {
                 display: grid;
@@ -113,7 +107,6 @@
             }
         }
 
-        /* Player Panels */
         .players-panel {
             background: rgba(18, 18, 31, 0.8);
             border: 1px solid var(--border);
@@ -131,7 +124,6 @@
             text-transform: uppercase;
         }
 
-        /* Mobile: Horizontal Scroll for Players */
         @media (max-width: 900px) {
             .players-panel {
                 order: 1;
@@ -171,7 +163,7 @@
 
         .player-card.active {
             border-color: var(--accent);
-            box-shadow: 0 0 20px rgba(0, 255, 170, 0.3), inset 0 0 20px rgba(0, 255, 170, 0.05);
+            box-shadow: 0 0 20px rgba(0, 255, 170, 0.3);
         }
 
         .player-card.busted {
@@ -253,7 +245,6 @@
             color: var(--warning);
         }
 
-        /* Main Game Area */
         .game-area {
             display: flex;
             flex-direction: column;
@@ -269,7 +260,6 @@
             }
         }
 
-        /* Deck Area */
         .deck-area {
             display: flex;
             gap: 40px;
@@ -334,7 +324,6 @@
             text-align: center;
         }
 
-        /* Active Cards */
         .active-cards {
             display: flex;
             gap: 10px;
@@ -360,7 +349,6 @@
             text-align: center;
         }
 
-        /* Card Styles */
         .card {
             width: 90px;
             height: 126px;
@@ -430,24 +418,14 @@
             text-shadow: 0 0 20px currentColor;
         }
 
-        .card-value.special {
-            font-size: 0.8rem;
-            text-align: center;
-            padding: 0 10px;
-        }
-
-        @media (max-width: 400px) {
-            .card-value.special {
-                font-size: 0.65rem;
-            }
-        }
-
-        .card-value.freeze {
+        .card-value.action {
+            font-size: 0.75rem;
             color: #00ddff;
         }
 
-        .card-value.second-chance {
-            color: #ffaa00;
+        .card-value.modifier {
+            font-size: 1.4rem;
+            color: var(--warning);
         }
 
         .card-subtitle {
@@ -458,16 +436,6 @@
             letter-spacing: 0.1em;
         }
 
-        .card-number-badge {
-            position: absolute;
-            top: 6px;
-            right: 6px;
-            font-family: 'Orbitron', monospace;
-            font-size: 0.6rem;
-            color: var(--muted);
-        }
-
-        /* Duplicate overlay */
         .duplicate-overlay {
             position: absolute;
             inset: 0;
@@ -503,7 +471,6 @@
             }
         }
 
-        /* Action Buttons */
         .action-buttons {
             display: flex;
             gap: 15px;
@@ -527,7 +494,6 @@
             flex: 1;
         }
 
-        /* Mobile: Stack buttons or make them full width */
         @media (max-width: 400px) {
             .action-buttons {
                 flex-direction: column;
@@ -541,19 +507,6 @@
         .btn:disabled {
             opacity: 0.4;
             cursor: not-allowed;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(rgba(255, 255, 255, 0.1), transparent);
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-
-        .btn:active:not(:disabled)::before {
-            opacity: 1;
         }
 
         .btn-flip {
@@ -576,7 +529,6 @@
             font-size: 0.75rem;
         }
 
-        /* Message Log */
         .message-log {
             background: rgba(18, 18, 31, 0.8);
             border: 1px solid var(--border);
@@ -592,7 +544,6 @@
             .message-log {
                 order: 3;
                 max-height: 150px;
-                min-height: 100px;
             }
         }
 
@@ -603,7 +554,6 @@
             font-size: 0.8rem;
             background: rgba(0, 0, 0, 0.3);
             border-left: 3px solid var(--border);
-            animation: slideIn 0.3s ease-out;
         }
 
         .log-entry.bust {
@@ -621,11 +571,6 @@
             background: rgba(255, 170, 0, 0.1);
         }
 
-        .log-entry.win {
-            border-left-color: var(--warning);
-            background: rgba(255, 170, 0, 0.2);
-        }
-
         .log-entry.round {
             border-left-color: var(--accent2);
             background: rgba(255, 0, 170, 0.1);
@@ -635,19 +580,6 @@
             border-bottom: 2px solid var(--accent2);
         }
 
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        /* Setup Screen */
         .setup-screen {
             position: fixed;
             inset: 0;
@@ -668,7 +600,7 @@
             max-width: 400px;
             width: 100%;
             box-shadow: 0 0 60px rgba(0, 255, 170, 0.2);
-            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: popIn 0.4s ease;
         }
 
         @keyframes popIn {
@@ -692,7 +624,6 @@
             background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
         .setup-option {
@@ -705,7 +636,6 @@
             color: var(--muted);
             margin-bottom: 10px;
             display: block;
-            letter-spacing: 0.1em;
         }
 
         .player-count-btns {
@@ -722,19 +652,12 @@
             color: var(--fg);
             font-family: 'Orbitron', monospace;
             font-size: 1rem;
-            font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .count-btn:hover {
-            border-color: var(--accent);
         }
 
         .count-btn.selected {
             border-color: var(--accent);
             background: rgba(0, 255, 170, 0.1);
-            box-shadow: 0 0 15px rgba(0, 255, 170, 0.2);
         }
 
         .btn-start {
@@ -743,7 +666,6 @@
             padding: 15px;
         }
 
-        /* Particles Container */
         #particles {
             position: fixed;
             top: 0;
@@ -760,7 +682,6 @@
             pointer-events: none;
         }
 
-        /* Status Message */
         .status-message {
             font-family: 'Orbitron', monospace;
             font-size: 1rem;
@@ -770,43 +691,11 @@
             border-radius: 8px;
             border: 1px solid var(--border);
             color: var(--accent);
-            letter-spacing: 0.1em;
         }
 
         .status-message.danger {
             color: var(--danger);
             border-color: var(--danger);
-        }
-
-        .status-message.warning {
-            color: var(--warning);
-            border-color: var(--warning);
-        }
-
-        /* Reduced Motion */
-        @media (prefers-reduced-motion: reduce) {
-
-            *,
-            *::before,
-            *::after {
-                animation-duration: 0.01ms !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 2px;
         }
 
         .hidden {
@@ -820,7 +709,6 @@
     <div class="grid-overlay"></div>
     <div id="particles"></div>
 
-    <!-- Setup Screen -->
     <div class="setup-screen" id="setupScreen">
         <div class="setup-content">
             <h2 class="setup-title">FLIP 7</h2>
@@ -838,20 +726,17 @@
         </div>
     </div>
 
-    <!-- Main Game -->
     <header>
         <h1>FLIP 7</h1>
     </header>
 
     <div class="game-container">
-        <!-- Players Panel -->
         <div class="players-panel">
             <div class="panel-title">Players</div>
             <div id="playersList"></div>
             <button class="btn btn-new-game" id="newGameBtn" style="width: 100%; margin-top: 10px;">New Game</button>
         </div>
 
-        <!-- Game Area -->
         <div class="game-area">
             <div class="deck-area">
                 <div>
@@ -868,16 +753,13 @@
             <div class="active-cards" id="activeCards">
                 <div class="active-cards-label">CURRENT HAND</div>
             </div>
-
             <div class="status-message" id="statusMessage">Your Turn</div>
-
             <div class="action-buttons" id="actionButtons">
                 <button class="btn btn-flip" id="flipBtn">FLIP</button>
                 <button class="btn btn-bank" id="bankBtn" disabled>BANK</button>
             </div>
         </div>
 
-        <!-- Message Log -->
         <div class="message-log">
             <div class="panel-title">Game Log</div>
             <div id="logEntries"></div>
@@ -885,38 +767,51 @@
     </div>
 
     <script>
-        // ==================== GAME CONFIG ====================
+        // ==================== CONFIG ====================
         const CONFIG = {
             TARGET_SCORE: 200,
-            AI_DELAY_MIN: 800,
-            AI_DELAY_MAX: 1500,
-            ANIMATION_DURATION: 600
+            AI_DELAY_MIN: 600,
+            AI_DELAY_MAX: 1200,
+            ANIMATION_DURATION: 500
         };
 
         // ==================== CARD DEFINITIONS ====================
         const CARD_TYPES = {
             NUMBER: 'number',
             FREEZE: 'freeze',
-            SECOND_CHANCE: 'secondChance'
+            SECOND_CHANCE: 'secondChance',
+            FLIP_THREE: 'flipThree',
+            MODIFIER_ADD: 'modifierAdd', // +2, +4, etc
+            MODIFIER_MULTI: 'modifierMulti' // x2
         };
 
         function createDeck() {
             const deck = [];
 
-            // Numbers 1-12, 4 of each
-            for (let num = 1; num <= 12; num++) {
-                for (let i = 0; i < 4; i++) {
+            // Number cards (79 total)
+            // 0x1, 1x1
+            deck.push({ type: CARD_TYPES.NUMBER, value: 0 });
+            deck.push({ type: CARD_TYPES.NUMBER, value: 1 });
+
+            // 2x2 ... 12x12
+            for (let num = 2; num <= 12; num++) {
+                for (let i = 0; i < num; i++) {
                     deck.push({ type: CARD_TYPES.NUMBER, value: num });
                 }
             }
 
-            // Special cards
-            for (let i = 0; i < 3; i++) {
-                deck.push({ type: CARD_TYPES.FREEZE, value: 'FREEZE' });
-            }
-            for (let i = 0; i < 3; i++) {
-                deck.push({ type: CARD_TYPES.SECOND_CHANCE, value: '2ND CHANCE' });
-            }
+            // Action cards (9)
+            for (let i = 0; i < 3; i++) deck.push({ type: CARD_TYPES.FREEZE, value: 'FREEZE' });
+            for (let i = 0; i < 3; i++) deck.push({ type: CARD_TYPES.FLIP_THREE, value: 'FLIP 3' });
+            for (let i = 0; i < 3; i++) deck.push({ type: CARD_TYPES.SECOND_CHANCE, value: '2ND CH' });
+
+            // Modifiers (6)
+            deck.push({ type: CARD_TYPES.MODIFIER_ADD, value: 2 });
+            deck.push({ type: CARD_TYPES.MODIFIER_ADD, value: 4 });
+            deck.push({ type: CARD_TYPES.MODIFIER_ADD, value: 6 });
+            deck.push({ type: CARD_TYPES.MODIFIER_ADD, value: 8 });
+            deck.push({ type: CARD_TYPES.MODIFIER_ADD, value: 10 });
+            deck.push({ type: CARD_TYPES.MODIFIER_MULTI, value: 2 }); // x2
 
             return shuffleDeck(deck);
         }
@@ -930,456 +825,307 @@
             return shuffled;
         }
 
-        // ==================== AI NAMES ====================
+        // ==================== GAME STATE ====================
         const AI_NAMES = ['NOVA', 'CIPHER', 'PHANTOM', 'VORTEX', 'NEON', 'GLITCH'];
 
-        // ==================== GAME STATE ====================
         let gameState = {
             players: [],
             deck: [],
             currentPlayerIndex: 0,
             currentRoundCards: [],
-            phase: 'setup', // setup, playing, roundEnd, gameEnd
+            phase: 'setup',
             playerCount: 4,
-            isProcessing: false
+            isProcessing: false,
+            flipThreeCount: 0 // Counter for Flip Three logic
         };
 
         // ==================== DOM ELEMENTS ====================
+        const $ = id => document.getElementById(id);
         const elements = {
-            setupScreen: document.getElementById('setupScreen'),
-            playersList: document.getElementById('playersList'),
-            activeCards: document.getElementById('activeCards'),
-            deckCount: document.getElementById('deckCount'),
-            statusMessage: document.getElementById('statusMessage'),
-            flipBtn: document.getElementById('flipBtn'),
-            bankBtn: document.getElementById('bankBtn'),
-            newGameBtn: document.getElementById('newGameBtn'),
-            startBtn: document.getElementById('startBtn'),
-            logEntries: document.getElementById('logEntries'),
-            particles: document.getElementById('particles')
+            setupScreen: $('setupScreen'), playersList: $('playersList'), activeCards: $('activeCards'),
+            deckCount: $('deckCount'), statusMessage: $('statusMessage'),
+            flipBtn: $('flipBtn'), bankBtn: $('bankBtn'), newGameBtn: $('newGameBtn'),
+            startBtn: $('startBtn'), logEntries: $('logEntries'), particles: $('particles')
         };
 
         // ==================== PARTICLE SYSTEM ====================
         function createParticles(x, y, color, count = 20) {
-            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            if (prefersReducedMotion) return;
-
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
             for (let i = 0; i < count; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-
+                const p = document.createElement('div');
+                p.className = 'particle';
                 const size = Math.random() * 8 + 4;
                 const angle = (Math.PI * 2 * i) / count;
-                const velocity = Math.random() * 100 + 50;
-                const vx = Math.cos(angle) * velocity;
-                const vy = Math.sin(angle) * velocity;
-
-                particle.style.cssText = `
-                    left: ${x}px;
-                    top: ${y}px;
-                    width: ${size}px;
-                    height: ${size}px;
-                    background: ${color};
-                    box-shadow: 0 0 ${size * 2}px ${color};
-                `;
-
-                elements.particles.appendChild(particle);
-
-                let posX = x;
-                let posY = y;
-                let opacity = 1;
-                let frame = 0;
-
-                function animate() {
-                    frame++;
-                    posX += vx * 0.02;
-                    posY += vy * 0.02 + frame * 0.1;
-                    opacity -= 0.02;
-
-                    particle.style.left = posX + 'px';
-                    particle.style.top = posY + 'px';
-                    particle.style.opacity = opacity;
-
-                    if (opacity > 0) {
-                        requestAnimationFrame(animate);
-                    } else {
-                        particle.remove();
-                    }
+                const vel = Math.random() * 100 + 50;
+                p.style.cssText = `left:${x}px; top:${y}px; width:${size}px; height:${size}px; background:${color}; box-shadow: 0 0 ${size * 2}px ${color};`;
+                elements.particles.appendChild(p);
+                let posX = x, posY = y, opacity = 1, f = 0;
+                function anim() {
+                    f++; posX += Math.cos(angle) * vel * 0.02; posY += Math.sin(angle) * vel * 0.02 + f * 0.1; opacity -= 0.02;
+                    p.style.left = posX + 'px'; p.style.top = posY + 'px'; p.style.opacity = opacity;
+                    if (opacity > 0) requestAnimationFrame(anim); else p.remove();
                 }
-
-                requestAnimationFrame(animate);
+                requestAnimationFrame(anim);
             }
         }
 
-        // ==================== UI FUNCTIONS ====================
+        // ==================== UI ====================
         function renderPlayers() {
             elements.playersList.innerHTML = '';
-
-            gameState.players.forEach((player, index) => {
-                const isActive = index === gameState.currentPlayerIndex;
+            gameState.players.forEach((p, i) => {
+                const isActive = i === gameState.currentPlayerIndex;
                 const card = document.createElement('div');
+                let cls = 'player-card';
+                let badge = '';
 
-                let cardClass = 'player-card';
-                let statusBadge = '';
+                if (p.isWinner) cls += ' winner';
+                else if (p.roundStatus === 'busted') { cls += ' busted'; badge = '<span class="status-badge busted">BUST</span>'; }
+                else if (p.roundStatus === 'banked') { cls += ' banked'; badge = '<span class="status-badge banked">BANK</span>'; }
+                else if (isActive) cls += ' active';
 
-                if (player.isWinner) {
-                    cardClass += ' winner';
-                } else if (player.roundStatus === 'busted') {
-                    cardClass += ' busted';
-                    statusBadge = '<span class="status-badge busted">BUST</span>';
-                } else if (player.roundStatus === 'banked') {
-                    cardClass += ' banked';
-                    statusBadge = '<span class="status-badge banked">BANK</span>';
-                } else if (isActive) {
-                    cardClass += ' active';
-                }
-
-                card.className = cardClass;
-
+                card.className = cls;
                 card.innerHTML = `
-                    <div class="player-name">
-                        ${player.name}
-                        ${!player.isAI ? '<span class="you-badge">YOU</span>' : ''}
-                        ${statusBadge}
-                    </div>
-                    <div class="player-score">${player.totalScore}</div>
-                    <div class="player-round">
-                        Round: <strong>${player.currentRoundScore}</strong> pts
-                        ${player.hasSecondChance ? '<span style="color: var(--warning);"> [2ND]</span>' : ''}
-                    </div>
+                    <div class="player-name">${p.name} ${!p.isAI ? '<span class="you-badge">YOU</span>' : ''} ${badge}</div>
+                    <div class="player-score">${p.totalScore}</div>
+                    <div class="player-round">Round: <strong>${p.currentRoundScore}</strong> pts ${p.hasSecondChance ? '<span style="color:var(--warning)">[2ND]</span>' : ''}</div>
                 `;
-
                 elements.playersList.appendChild(card);
             });
         }
 
         function renderActiveCards() {
-            // Keep the label
             elements.activeCards.innerHTML = '<div class="active-cards-label">CURRENT HAND</div>';
-
-            gameState.currentRoundCards.forEach((card, index) => {
-                const cardEl = createCardElement(card, index);
-                elements.activeCards.appendChild(cardEl);
-
-                // Trigger flip animation after a small delay
-                setTimeout(() => {
-                    cardEl.classList.add('flipping');
-                }, 50 + index * 50);
+            gameState.currentRoundCards.forEach((c, i) => {
+                const el = createCardElement(c, i);
+                elements.activeCards.appendChild(el);
+                setTimeout(() => el.classList.add('flipping'), 50 + i * 30);
             });
         }
 
         function createCardElement(card, index) {
-            const cardEl = document.createElement('div');
-            cardEl.className = 'card';
-            cardEl.dataset.index = index;
+            const el = document.createElement('div');
+            el.className = 'card';
+            el.dataset.index = index;
 
-            let valueClass = '';
-            let displayValue = card.value;
-            let subtitle = '';
+            let valClass = '', disp = card.value, sub = '';
 
-            if (card.type === CARD_TYPES.NUMBER) {
-                valueClass = 'number';
-                subtitle = card.value;
-            } else if (card.type === CARD_TYPES.FREEZE) {
-                valueClass = 'freeze special';
-                displayValue = 'FREEZE';
-                subtitle = 'AUTO-BANK';
-            } else if (card.type === CARD_TYPES.SECOND_CHANCE) {
-                valueClass = 'second-chance special';
-                displayValue = '2ND';
-                subtitle = 'CHANCE';
-            }
+            if (card.type === CARD_TYPES.NUMBER) { valClass = 'number'; sub = card.value; }
+            else if (card.type === CARD_TYPES.FREEZE) { valClass = 'action'; disp = 'FREEZE'; sub = 'BANK'; }
+            else if (card.type === CARD_TYPES.SECOND_CHANCE) { valClass = 'action'; disp = '2ND'; sub = 'CHANCE'; }
+            else if (card.type === CARD_TYPES.FLIP_THREE) { valClass = 'action'; disp = 'FLIP 3'; sub = 'ACTION'; }
+            else if (card.type === CARD_TYPES.MODIFIER_ADD) { valClass = 'modifier'; disp = `+${card.value}`; sub = 'ADD'; }
+            else if (card.type === CARD_TYPES.MODIFIER_MULTI) { valClass = 'modifier'; disp = `x${card.value}`; sub = 'MULTI'; }
 
-            cardEl.innerHTML = `
+            el.innerHTML = `
                 <div class="card-inner">
                     <div class="card-back"></div>
                     <div class="card-front">
                         <span class="card-number-badge">#${index + 1}</span>
-                        <span class="card-value ${valueClass}">${displayValue}</span>
-                        <span class="card-subtitle">${subtitle}</span>
+                        <span class="card-value ${valClass}">${disp}</span>
+                        <span class="card-subtitle">${sub}</span>
                     </div>
                 </div>
                 <div class="duplicate-overlay">DUP!</div>
             `;
-
-            return cardEl;
+            return el;
         }
 
-        function updateDeckCount() {
-            elements.deckCount.textContent = `Cards: ${gameState.deck.length}`;
-        }
-
-        function setStatus(message, type = '') {
-            elements.statusMessage.textContent = message;
-            elements.statusMessage.className = 'status-message ' + type;
-        }
-
-        function addLog(message, type = '') {
-            const entry = document.createElement('div');
-            entry.className = `log-entry ${type}`;
-            entry.textContent = message;
-            elements.logEntries.insertBefore(entry, elements.logEntries.firstChild);
-
-            // Keep only last 30 entries for mobile performance
-            while (elements.logEntries.children.length > 30) {
-                elements.logEntries.removeChild(elements.logEntries.lastChild);
-            }
+        function updateDeckCount() { elements.deckCount.textContent = `Cards: ${gameState.deck.length}`; }
+        function setStatus(msg, type = '') { elements.statusMessage.textContent = msg; elements.statusMessage.className = 'status-message ' + type; }
+        function addLog(msg, type = '') {
+            const e = document.createElement('div'); e.className = `log-entry ${type}`; e.textContent = msg;
+            elements.logEntries.insertBefore(e, elements.logEntries.firstChild);
+            while (elements.logEntries.children.length > 30) elements.logEntries.removeChild(elements.logEntries.lastChild);
         }
 
         // ==================== GAME LOGIC ====================
         function initGame() {
-            // Create players
-            gameState.players = [];
-            gameState.players.push({
-                name: 'PLAYER',
-                isAI: false,
-                totalScore: 0,
-                currentRoundScore: 0,
-                hasSecondChance: false,
-                roundStatus: 'playing', // playing, busted, banked
-                isWinner: false
-            });
-
+            gameState.players = [{
+                name: 'PLAYER', isAI: false, totalScore: 0, currentRoundScore: 0,
+                hasSecondChance: false, roundStatus: 'playing', isWinner: false
+            }];
             const shuffledNames = shuffleDeck([...AI_NAMES]);
             for (let i = 1; i < gameState.playerCount; i++) {
                 gameState.players.push({
-                    name: shuffledNames[i - 1],
-                    isAI: true,
-                    totalScore: 0,
-                    currentRoundScore: 0,
-                    hasSecondChance: false,
-                    roundStatus: 'playing',
-                    isWinner: false
+                    name: shuffledNames[i - 1], isAI: true, totalScore: 0, currentRoundScore: 0,
+                    hasSecondChance: false, roundStatus: 'playing', isWinner: false
                 });
             }
-
-            // Create deck
             gameState.deck = createDeck();
-
-            // Reset state
             gameState.currentPlayerIndex = 0;
             gameState.currentRoundCards = [];
             gameState.phase = 'playing';
             gameState.isProcessing = false;
 
-            // Clear log
             elements.logEntries.innerHTML = '';
-
-            // Render
-            renderPlayers();
-            renderActiveCards();
-            updateDeckCount();
-
-            setStatus('Your Turn - Flip or Bank');
-            updateButtons();
-
+            renderPlayers(); renderActiveCards(); updateDeckCount();
+            setStatus('Your Turn'); updateButtons();
             addLog('Game started! First to 200 wins.');
         }
 
         function updateButtons() {
-            const player = gameState.players[gameState.currentPlayerIndex];
-            const isHuman = player && !player.isAI;
+            const p = gameState.players[gameState.currentPlayerIndex];
+            const isHuman = p && !p.isAI;
+            // Can bank if have at least one number card
             const canBank = gameState.currentRoundCards.some(c => c.type === CARD_TYPES.NUMBER);
-
             elements.flipBtn.disabled = !isHuman || gameState.isProcessing || gameState.phase !== 'playing';
             elements.bankBtn.disabled = !isHuman || gameState.isProcessing || !canBank || gameState.phase !== 'playing';
         }
 
         function drawCard() {
-            if (gameState.deck.length === 0) {
-                gameState.deck = createDeck();
-                addLog('Deck reshuffled!');
-            }
+            if (gameState.deck.length === 0) { gameState.deck = createDeck(); addLog('Deck reshuffled!'); }
             return gameState.deck.pop();
         }
 
-        function calculateRoundScore() {
-            return gameState.currentRoundCards
-                .filter(c => c.type === CARD_TYPES.NUMBER)
-                .reduce((sum, c) => sum + c.value, 0);
+        // ** FIXED SCORING LOGIC **
+        function calculateFinalScore() {
+            let score = 0;
+            let multiplier = 1;
+            const numbers = [];
+
+            // 1. Sum numbers and collect unique ones
+            gameState.currentRoundCards.forEach(c => {
+                if (c.type === CARD_TYPES.NUMBER) {
+                    score += c.value;
+                    numbers.push(c.value);
+                } else if (c.type === CARD_TYPES.MODIFIER_ADD) {
+                    score += c.value;
+                } else if (c.type === CARD_TYPES.MODIFIER_MULTI) {
+                    multiplier *= c.value;
+                }
+            });
+
+            // 2. Check Flip 7 Bonus (7 unique numbers)
+            const unique = [...new Set(numbers)];
+            if (unique.length >= 7) {
+                score += 15;
+                addLog("FLIP 7 BONUS! +15 points", 'special');
+                createParticles(window.innerWidth / 2, window.innerHeight / 2, '#ffaa00', 50);
+            }
+
+            // 3. Apply multiplier
+            score = Math.floor(score * multiplier);
+
+            return score;
         }
 
         function hasDuplicateNumber(card) {
             if (card.type !== CARD_TYPES.NUMBER) return false;
-            return gameState.currentRoundCards.some(c =>
-                c.type === CARD_TYPES.NUMBER && c.value === card.value
-            );
+            return gameState.currentRoundCards.some(c => c.type === CARD_TYPES.NUMBER && c.value === card.value);
         }
 
         function flipCard() {
             if (gameState.isProcessing || gameState.phase !== 'playing') return;
-
             const player = gameState.players[gameState.currentPlayerIndex];
-            if (player.roundStatus !== 'playing') {
-                nextTurn();
-                return;
-            }
+            if (player.roundStatus !== 'playing') { nextTurn(); return; }
 
             gameState.isProcessing = true;
 
             const card = drawCard();
             updateDeckCount();
-
-            // Check for duplicate BEFORE adding to cards
             const isDuplicate = hasDuplicateNumber(card);
 
-            // Add card to current round
             gameState.currentRoundCards.push(card);
 
-            // Create card element and animate
             const cardEl = createCardElement(card, gameState.currentRoundCards.length - 1);
-            if (isDuplicate) {
-                cardEl.classList.add('duplicate');
-            }
+            if (isDuplicate) cardEl.classList.add('duplicate');
             elements.activeCards.appendChild(cardEl);
+            setTimeout(() => cardEl.classList.add('flipping'), 50);
 
-            setTimeout(() => {
-                cardEl.classList.add('flipping');
-            }, 50);
-
-            // Particle effect
+            // Particles
             const rect = cardEl.getBoundingClientRect();
             setTimeout(() => {
-                const centerX = rect.left + rect.width / 2;
-                const centerY = rect.top + rect.height / 2;
-                if (card.type === CARD_TYPES.FREEZE) {
-                    createParticles(centerX, centerY, '#00ddff', 30);
-                } else if (card.type === CARD_TYPES.SECOND_CHANCE) {
-                    createParticles(centerX, centerY, '#ffaa00', 30);
-                } else if (isDuplicate) {
-                    createParticles(centerX, centerY, '#ff3366', 40);
-                } else {
-                    createParticles(centerX, centerY, '#00ffaa', 15);
-                }
+                const cx = rect.left + rect.width / 2, cy = rect.top + rect.height / 2;
+                if (isDuplicate) createParticles(cx, cy, '#ff3366', 40);
+                else if (card.type === CARD_TYPES.FREEZE) createParticles(cx, cy, '#00ddff', 30);
+                else if (card.type === CARD_TYPES.SECOND_CHANCE || card.type === CARD_TYPES.MODIFIER_ADD || card.type === CARD_TYPES.MODIFIER_MULTI) createParticles(cx, cy, '#ffaa00', 30);
+                else if (card.type === CARD_TYPES.FLIP_THREE) createParticles(cx, cy, '#ff00aa', 30);
+                else createParticles(cx, cy, '#00ffaa', 15);
             }, CONFIG.ANIMATION_DURATION / 2);
 
-            // Handle card effects
-            setTimeout(() => {
-                handleCardEffect(card, player, isDuplicate);
-            }, CONFIG.ANIMATION_DURATION);
+            setTimeout(() => handleCardEffect(card, player, isDuplicate), CONFIG.ANIMATION_DURATION);
         }
 
         function handleCardEffect(card, player, isDuplicate) {
-            if (card.type === CARD_TYPES.FREEZE) {
-                // Freeze: auto-bank
-                const score = calculateRoundScore();
-                player.totalScore += score;
-                player.currentRoundScore = score;
-                player.roundStatus = 'banked';
-
-                addLog(`${player.name} drew FREEZE! Banked ${score} points.`, 'special');
-
-                if (player.totalScore >= CONFIG.TARGET_SCORE) {
-                    endGame(player);
+            // 1. Handle Duplicate (Bust)
+            if (isDuplicate) {
+                if (player.hasSecondChance) {
+                    player.hasSecondChance = false;
+                    gameState.currentRoundCards.pop(); // remove the duplicate card from visuals/score calc
+                    const dupEl = elements.activeCards.querySelector('.card:last-child');
+                    if (dupEl) dupEl.remove();
+                    addLog(`${player.name} used Second Chance!`, 'special');
+                    player.currentRoundScore = calculateFinalScore(); // Recalc display score
+                    renderPlayers();
+                    gameState.isProcessing = false;
+                    updateButtons();
+                    if (player.isAI) setTimeout(aiTurn, CONFIG.AI_DELAY_MIN);
                     return;
                 }
+                // BUST
+                player.roundStatus = 'busted';
+                player.currentRoundScore = 0;
+                setStatus(`${player.name} BUSTED!`, 'danger');
+                addLog(`${player.name} BUSTED with duplicate ${card.value}!`, 'bust');
+                renderPlayers();
+                setTimeout(() => { gameState.currentRoundCards = []; renderActiveCards(); nextTurn(); }, 1000);
+                return;
+            }
 
-                setTimeout(() => {
-                    gameState.currentRoundCards = [];
-                    renderActiveCards();
-                    nextTurn();
-                }, 500);
+            // 2. Handle Special Cards
+            if (card.type === CARD_TYPES.FREEZE) {
+                const score = calculateFinalScore();
+                player.totalScore += score;
+                player.currentRoundScore = score; // Display logic
+                player.roundStatus = 'banked';
+                addLog(`${player.name} drew FREEZE! Banked ${score} points.`, 'special');
+                if (player.totalScore >= CONFIG.TARGET_SCORE) { endGame(player); return; }
+                setTimeout(() => { gameState.currentRoundCards = []; renderActiveCards(); nextTurn(); }, 500);
                 return;
             }
 
             if (card.type === CARD_TYPES.SECOND_CHANCE) {
                 player.hasSecondChance = true;
-                player.currentRoundScore = calculateRoundScore();
                 addLog(`${player.name} got Second Chance!`, 'special');
+            }
 
-                renderPlayers();
+            if (card.type === CARD_TYPES.FLIP_THREE) {
+                addLog(`${player.name} drew FLIP THREE! Flipping 3 more...`, 'special');
+                // We need to unlock processing to allow the recursive flips
                 gameState.isProcessing = false;
-                updateButtons();
-
-                if (player.isAI) {
-                    setTimeout(aiTurn, CONFIG.AI_DELAY_MIN + Math.random() * CONFIG.AI_DELAY_MAX);
-                }
+                // Trigger 3 more flips
+                setTimeout(() => flipCard(), CONFIG.ANIMATION_DURATION);
+                setTimeout(() => flipCard(), CONFIG.ANIMATION_DURATION * 2);
+                setTimeout(() => flipCard(), CONFIG.ANIMATION_DURATION * 3);
                 return;
             }
 
-            // Number card
-            if (isDuplicate) {
-                // Check for second chance
-                if (player.hasSecondChance) {
-                    player.hasSecondChance = false;
-
-                    // Remove the duplicate card from hand
-                    gameState.currentRoundCards.pop();
-                    const dupCardEl = elements.activeCards.querySelector('.card:last-child');
-                    if (dupCardEl) {
-                        dupCardEl.remove();
-                    }
-
-                    addLog(`${player.name} used Second Chance!`, 'special');
-                    player.currentRoundScore = calculateRoundScore();
-                    renderPlayers();
-                    gameState.isProcessing = false;
-                    updateButtons();
-
-                    if (player.isAI) {
-                        setTimeout(aiTurn, CONFIG.AI_DELAY_MIN + Math.random() * CONFIG.AI_DELAY_MAX);
-                    }
-                    return;
-                }
-
-                // BUST!
-                player.roundStatus = 'busted';
-                player.currentRoundScore = 0;
-                setStatus(`${player.name} BUSTED!`, 'danger');
-                addLog(`${player.name} BUSTED with duplicate ${card.value}!`, 'bust');
-
-                renderPlayers();
-                setTimeout(() => nextTurn(), 1000);
-                return;
-            }
-
-            // Valid number card
-            player.currentRoundScore = calculateRoundScore();
+            // 3. Update Score Display
+            player.currentRoundScore = calculateFinalScore();
             renderPlayers();
 
-            // Check for FLIP 7 bonus
-            const uniqueNumbers = gameState.currentRoundCards
-                .filter(c => c.type === CARD_TYPES.NUMBER)
-                .map(c => c.value);
-
-            if (uniqueNumbers.length >= 7 && new Set(uniqueNumbers).size >= 7) {
-                const bonus = 15;
-                player.currentRoundScore += bonus;
-                addLog(`${player.name} FLIP 7 BONUS! +${bonus} points!`, 'special');
-                createParticles(window.innerWidth / 2, window.innerHeight / 2, '#ffaa00', 50);
-            }
-
-            setStatus(`${player.name}: ${player.currentRoundScore} pts this round`);
+            // 4. Continue
+            setStatus(`${player.name}: ${player.currentRoundScore} pts`);
             gameState.isProcessing = false;
             updateButtons();
 
-            if (player.isAI) {
-                setTimeout(aiTurn, CONFIG.AI_DELAY_MIN + Math.random() * CONFIG.AI_DELAY_MAX);
-            }
+            if (player.isAI) setTimeout(aiTurn, CONFIG.AI_DELAY_MIN + Math.random() * CONFIG.AI_DELAY_MAX);
         }
 
         function bankPoints() {
             if (gameState.isProcessing || gameState.phase !== 'playing') return;
-
-            gameState.isProcessing = true; // Lock input during banking animation
-
+            gameState.isProcessing = true;
             const player = gameState.players[gameState.currentPlayerIndex];
-            const score = calculateRoundScore();
 
+            const score = calculateFinalScore(); // ** USE FINAL SCORE CALCULATION **
             player.totalScore += score;
             player.currentRoundScore = score;
             player.roundStatus = 'banked';
 
             addLog(`${player.name} banked ${score} points! Total: ${player.totalScore}`, 'bank');
+            createParticles(window.innerWidth / 2, window.innerHeight / 2, '#ffaa00', 30);
 
-            // Particle celebration
-            const rect = elements.bankBtn.getBoundingClientRect();
-            createParticles(rect.left + rect.width / 2, rect.top, '#ffaa00', 30);
-
-            if (player.totalScore >= CONFIG.TARGET_SCORE) {
-                endGame(player);
-                return;
-            }
+            if (player.totalScore >= CONFIG.TARGET_SCORE) { endGame(player); return; }
 
             gameState.currentRoundCards = [];
             renderActiveCards();
@@ -1388,188 +1134,87 @@
 
         function nextTurn() {
             gameState.isProcessing = false;
-
-            // Find next player who is still 'playing'
             let nextIdx = (gameState.currentPlayerIndex + 1) % gameState.players.length;
-            let foundPlayer = false;
-            let loopCount = 0;
+            let found = false, loops = 0;
 
-            // Loop through players to find one that is still playing
-            while (loopCount < gameState.players.length) {
-                const p = gameState.players[nextIdx];
-                if (p.roundStatus === 'playing') {
+            while (loops < gameState.players.length) {
+                if (gameState.players[nextIdx].roundStatus === 'playing') {
                     gameState.currentPlayerIndex = nextIdx;
-                    foundPlayer = true;
+                    found = true;
                     break;
                 }
                 nextIdx = (nextIdx + 1) % gameState.players.length;
-                loopCount++;
+                loops++;
             }
 
-            if (!foundPlayer) {
-                // Everyone has finished (busted or banked)
-                endRound();
-                return;
-            }
+            if (!found) { endRound(); return; }
 
-            const player = gameState.players[gameState.currentPlayerIndex];
-
-            // Clear cards for the new player
+            const p = gameState.players[gameState.currentPlayerIndex];
             gameState.currentRoundCards = [];
-            renderActiveCards();
-            renderPlayers();
+            renderActiveCards(); renderPlayers();
 
-            if (player.isAI) {
-                setStatus(`${player.name} is thinking...`);
-                updateButtons();
-                setTimeout(aiTurn, CONFIG.AI_DELAY_MIN + Math.random() * CONFIG.AI_DELAY_MAX);
-            } else {
-                setStatus('Your Turn - Flip or Bank');
-                updateButtons();
-            }
+            if (p.isAI) { setStatus(`${p.name} thinking...`); updateButtons(); setTimeout(aiTurn, CONFIG.AI_DELAY_MIN); }
+            else { setStatus('Your Turn'); updateButtons(); }
         }
 
         function endRound() {
             addLog('--- ROUND ENDED ---', 'round');
-
-            // Check for winner
             const winner = gameState.players.find(p => p.totalScore >= CONFIG.TARGET_SCORE);
-            if (winner) {
-                endGame(winner);
-                return;
-            }
+            if (winner) { endGame(winner); return; }
 
-            // Start new round
-            startNewRound();
-        }
-
-        function startNewRound() {
+            // Reset for new round
             addLog('New Round Started!', 'round');
-
-            gameState.players.forEach(p => {
-                p.roundStatus = 'playing';
-                p.currentRoundScore = 0;
-            });
-
+            gameState.players.forEach(p => { p.roundStatus = 'playing'; p.currentRoundScore = 0; });
             gameState.currentRoundCards = [];
-            gameState.currentPlayerIndex = 0; // Reset to first player
+            gameState.currentPlayerIndex = 0;
 
-            renderPlayers();
-            renderActiveCards();
-
-            const player = gameState.players[0];
-            if (player.isAI) {
-                setStatus(`${player.name} is thinking...`);
-                updateButtons();
-                setTimeout(aiTurn, CONFIG.AI_DELAY_MIN + Math.random() * CONFIG.AI_DELAY_MAX);
-            } else {
-                setStatus('Your Turn - Flip or Bank');
-                updateButtons();
-            }
+            renderPlayers(); renderActiveCards();
+            const p = gameState.players[0];
+            if (p.isAI) { setStatus(`${p.name} thinking...`); updateButtons(); setTimeout(aiTurn, CONFIG.AI_DELAY_MIN); }
+            else { setStatus('Your Turn'); updateButtons(); }
         }
 
-        // ==================== AI LOGIC ====================
+        // ==================== AI ====================
         function aiTurn() {
             if (gameState.phase !== 'playing') return;
+            const p = gameState.players[gameState.currentPlayerIndex];
+            if (!p.isAI || gameState.isProcessing || p.roundStatus !== 'playing') return;
 
-            const player = gameState.players[gameState.currentPlayerIndex];
-            if (!player.isAI || gameState.isProcessing || player.roundStatus !== 'playing') return;
+            const score = calculateFinalScore(); // Check current potential score
+            const nums = gameState.currentRoundCards.filter(c => c.type === CARD_TYPES.NUMBER).map(c => c.value);
+            const risk = nums.length * 0.08;
+            const need = CONFIG.TARGET_SCORE - p.totalScore;
+            const agg = Math.min(1, need / 100);
+            const safe = p.hasSecondChance ? 0.2 : 0.5;
 
-            const score = calculateRoundScore();
-            const uniqueNumbers = gameState.currentRoundCards
-                .filter(c => c.type === CARD_TYPES.NUMBER)
-                .map(c => c.value);
+            const shouldBank = score >= 12 && (risk > safe - agg * 0.2 || score >= 20 || (p.totalScore + score >= CONFIG.TARGET_SCORE));
 
-            // AI decision factors
-            const cardsInHand = uniqueNumbers.length;
-            const riskLevel = player.hasSecondChance ? 0.3 : 0.5;
-            const pointsNeeded = CONFIG.TARGET_SCORE - player.totalScore;
-
-            // More aggressive when behind
-            const aggressiveness = Math.min(1, pointsNeeded / 100);
-
-            // Calculate bust probability (simplified)
-            // Each number card drawn reduces safe cards
-            const bustRisk = cardsInHand * 0.08;
-
-            // Decision
-            const shouldBank = score >= 15 && (
-                bustRisk > riskLevel - aggressiveness * 0.2 ||
-                score >= 25 ||
-                (player.totalScore + score >= CONFIG.TARGET_SCORE)
-            );
-
-            // Also bank if close to winning
-            const closeToWin = player.totalScore + score >= CONFIG.TARGET_SCORE;
-
-            if (shouldBank || closeToWin) {
-                bankPoints();
-            } else {
-                flipCard();
-            }
+            if (shouldBank || (p.totalScore + score >= CONFIG.TARGET_SCORE)) bankPoints();
+            else flipCard();
         }
 
-        // ==================== GAME END ====================
-        function endGame(winner) {
-            gameState.phase = 'gameEnd';
-            winner.isWinner = true;
-
-            setStatus(`${winner.name} WINS!`, 'warning');
-            addLog(`${winner.name} WINS with ${winner.totalScore} points!`, 'win');
-
-            // Celebration particles
-            for (let i = 0; i < 5; i++) {
-                setTimeout(() => {
-                    createParticles(
-                        Math.random() * window.innerWidth,
-                        Math.random() * window.innerHeight,
-                        ['#00ffaa', '#ff00aa', '#ffaa00'][Math.floor(Math.random() * 3)],
-                        30
-                    );
-                }, i * 200);
-            }
-
-            renderPlayers();
-            updateButtons();
-        }
-
-        // ==================== EVENT LISTENERS ====================
-        document.querySelectorAll('.count-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('selected'));
-                btn.classList.add('selected');
-                gameState.playerCount = parseInt(btn.dataset.count);
+        // ==================== EVENTS ====================
+        document.querySelectorAll('.count-btn').forEach(b => {
+            b.addEventListener('click', () => {
+                document.querySelectorAll('.count-btn').forEach(x => x.classList.remove('selected'));
+                b.classList.add('selected');
+                gameState.playerCount = parseInt(b.dataset.count);
             });
         });
 
-        elements.startBtn.addEventListener('click', () => {
-            elements.setupScreen.classList.add('hidden');
-            initGame();
-        });
-
+        elements.startBtn.addEventListener('click', () => { elements.setupScreen.classList.add('hidden'); initGame(); });
         elements.flipBtn.addEventListener('click', flipCard);
         elements.bankBtn.addEventListener('click', bankPoints);
-        elements.newGameBtn.addEventListener('click', () => {
-            gameState.phase = 'setup';
-            elements.setupScreen.classList.remove('hidden');
-        });
+        elements.newGameBtn.addEventListener('click', () => { gameState.phase = 'setup'; elements.setupScreen.classList.remove('hidden'); });
 
-        // Keyboard support
-        document.addEventListener('keydown', (e) => {
+        document.addEventListener('keydown', e => {
             if (gameState.phase !== 'playing') return;
-
-            const player = gameState.players[gameState.currentPlayerIndex];
-            if (player.isAI) return;
-
-            if (e.key === ' ' || e.key === 'Enter') {
-                e.preventDefault();
-                flipCard();
-            } else if (e.key === 'b' || e.key === 'B') {
-                bankPoints();
-            }
+            const p = gameState.players[gameState.currentPlayerIndex];
+            if (p.isAI) return;
+            if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flipCard(); }
+            else if (e.key === 'b' || e.key === 'B') bankPoints();
         });
 
-        // Initial setup
         updateButtons();
     </script>
 </body>
