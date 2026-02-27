@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FLIP 7 - Neon Arcade</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a12;
+            --fg: #e0e0ff;
+            --muted: #4a4a6a;
+            --accent: #00ffaa;
+            --accent2: #ff00aa;
+            --card-bg: #12121f;
+            --border: #2a2a4a;
+            --danger: #ff3366;
+            --warning: #ffaa00;
+            --success: #00ff88;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Background */
+        .bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(0, 255, 170, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(255, 0, 170, 0.08) 0%, transparent 50%),
+                linear-gradient(180deg, #0a0a12 0%, #0f0f1a 100%);
+        }
+
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(0, 255, 170, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 170, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 15px 10px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(10, 10, 18, 0.9);
+            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+        }
+
+        h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(1.5rem, 5vw, 3.5rem);
+            font-weight: 900;
+            letter-spacing: 0.3em;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 20px rgba(0, 255, 170, 0.5));
+        }
+
+        /* Main Layout */
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            width: 100%;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 15px;
+            gap: 15px;
+            overflow-y: auto;
+        }
+
+        /* Desktop Layout Override */
+        @media (min-width: 901px) {
+            .game-container {
+                display: grid;
+                grid-template-columns: 250px 1fr 250px;
+                gap: 20px;
+                padding: 20px;
+                overflow: visible;
+            }
+        }
+
+        /* Player Panels */
+        .players-panel {
+            background: rgba(18, 18, 31, 0.8);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .panel-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.8rem;
+            color: var(--accent);
+            margin-bottom: 10px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        /* Mobile: Horizontal Scroll for Players */
+        @media (max-width: 900px) {
+            .players-panel {
+                order: 1;
+                padding: 10px 15px;
+            }
+
+            #playersList {
+                display: flex;
+                gap: 10px;
+                overflow-x: auto;
+                padding-bottom: 5px;
+                scrollbar-width: none;
+            }
+
+            #playersList::-webkit-scrollbar {
+                display: none;
+            }
+        }
+
+        .player-card {
+            background: rgba(30, 30, 50, 0.6);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        @media (max-width: 900px) {
+            .player-card {
+                min-width: 140px;
+                flex-shrink: 0;
+                margin-bottom: 0;
+            }
+        }
+
+        .player-card.active {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(0, 255, 170, 0.3), inset 0 0 20px rgba(0, 255, 170, 0.05);
+        }
+
+        .player-card.busted {
+            border-color: var(--danger);
+            opacity: 0.6;
+        }
+
+        .player-card.winner {
+            border-color: var(--warning);
+            animation: winPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes winPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(255, 170, 0, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 40px rgba(255, 170, 0, 0.6);
+            }
+        }
+
+        .player-name {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .player-name .you-badge {
+            font-size: 0.55rem;
+            background: var(--accent);
+            color: var(--bg);
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+
+        .player-score {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: var(--accent);
+            margin-top: 4px;
+        }
+
+        .player-round {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .player-round strong {
+            color: var(--warning);
+        }
+
+        /* Main Game Area */
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .game-area {
+                order: 2;
+                gap: 15px;
+            }
+        }
+
+        /* Deck Area */
+        .deck-area {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .deck-stack {
+            position: relative;
+            width: 100px;
+            height: 140px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        @media (max-width: 400px) {
+            .deck-stack {
+                width: 80px;
+                height: 112px;
+            }
+        }
+
+        .deck-stack:hover {
+            transform: scale(1.05);
+        }
+
+        .deck-card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 100%);
+            border: 2px solid var(--accent2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 0, 170, 0.2);
+        }
+
+        .deck-card::before {
+            content: '';
+            position: absolute;
+            inset: 6px;
+            border: 1px solid rgba(255, 0, 170, 0.3);
+            border-radius: 8px;
+        }
+
+        .deck-label {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.8rem;
+            color: var(--accent2);
+            text-align: center;
+            margin-top: 10px;
+            letter-spacing: 0.1em;
+        }
+
+        .deck-count {
+            font-size: 0.7rem;
+            color: var(--muted);
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        /* Active Cards */
+        .active-cards {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            min-height: 140px;
+            align-items: center;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .active-cards-label {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.7rem;
+            color: var(--muted);
+            letter-spacing: 0.2em;
+            margin-bottom: 10px;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Card Styles */
+        .card {
+            width: 90px;
+            height: 126px;
+            perspective: 1000px;
+            cursor: default;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 400px) {
+            .card {
+                width: 70px;
+                height: 98px;
+            }
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .card.flipping .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front,
+        .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #1e1e32 0%, #12121f 100%);
+            border: 2px solid var(--accent);
+            transform: rotateY(180deg);
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 100%);
+            border: 2px solid var(--muted);
+        }
+
+        .card-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.2rem;
+            font-weight: 900;
+        }
+
+        @media (max-width: 400px) {
+            .card-value {
+                font-size: 1.8rem;
+            }
+        }
+
+        .card-value.number {
+            color: var(--fg);
+            text-shadow: 0 0 20px currentColor;
+        }
+
+        .card-value.special {
+            font-size: 0.8rem;
+            text-align: center;
+            padding: 0 10px;
+        }
+
+        @media (max-width: 400px) {
+            .card-value.special {
+                font-size: 0.65rem;
+            }
+        }
+
+        .card-value.freeze {
+            color: #00ddff;
+        }
+
+        .card-value.second-chance {
+            color: #ffaa00;
+        }
+
+        .card-subtitle {
+            font-size: 0.6rem;
+            color: var(--muted);
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .card-number-badge {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.6rem;
+            color: var(--muted);
+        }
+
+        /* Duplicate overlay */
+        .duplicate-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 51, 102, 0.3);
+            border-radius: 8px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', monospace;
+            font-weight: 900;
+            color: var(--danger);
+            font-size: 1rem;
+        }
+
+        .card.duplicate .duplicate-overlay {
+            display: flex;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .btn {
+            font-family: 'Orbitron', monospace;
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            position: relative;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        /* Mobile: Stack buttons or make them full width */
+        @media (max-width: 400px) {
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                padding: 18px;
+            }
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(rgba(255, 255, 255, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .btn:active:not(:disabled)::before {
+            opacity: 1;
+        }
+
+        .btn-flip {
+            background: linear-gradient(135deg, var(--accent) 0%, #00cc88 100%);
+            color: var(--bg);
+            box-shadow: 0 0 30px rgba(0, 255, 170, 0.4);
+        }
+
+        .btn-bank {
+            background: linear-gradient(135deg, var(--warning) 0%, #ff8800 100%);
+            color: var(--bg);
+            box-shadow: 0 0 30px rgba(255, 170, 0, 0.3);
+        }
+
+        .btn-new-game {
+            background: linear-gradient(135deg, var(--accent2) 0%, #cc0088 100%);
+            color: var(--fg);
+            box-shadow: 0 0 30px rgba(255, 0, 170, 0.3);
+            padding: 10px 20px;
+            font-size: 0.75rem;
+        }
+
+        /* Message Log */
+        .message-log {
+            background: rgba(18, 18, 31, 0.8);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            flex: 1;
+            overflow-y: auto;
+            min-height: 100px;
+        }
+
+        @media (max-width: 900px) {
+            .message-log {
+                order: 3;
+                max-height: 150px;
+                min-height: 100px;
+            }
+        }
+
+        .log-entry {
+            padding: 6px 10px;
+            margin-bottom: 6px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-left: 3px solid var(--border);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .log-entry.bust {
+            border-left-color: var(--danger);
+            background: rgba(255, 51, 102, 0.1);
+        }
+
+        .log-entry.bank {
+            border-left-color: var(--success);
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .log-entry.special {
+            border-left-color: var(--warning);
+            background: rgba(255, 170, 0, 0.1);
+        }
+
+        .log-entry.win {
+            border-left-color: var(--warning);
+            background: rgba(255, 170, 0, 0.2);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Setup Screen */
+        .setup-screen {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 10, 18, 0.98);
+            backdrop-filter: blur(20px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
+        }
+
+        .setup-content {
+            background: rgba(18, 18, 31, 0.9);
+            border: 2px solid var(--accent);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 0 60px rgba(0, 255, 170, 0.2);
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .setup-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.8rem;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .setup-option {
+            margin-bottom: 20px;
+        }
+
+        .setup-label {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-bottom: 10px;
+            display: block;
+            letter-spacing: 0.1em;
+        }
+
+        .player-count-btns {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+
+        .count-btn {
+            padding: 12px;
+            background: rgba(30, 30, 50, 0.6);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            color: var(--fg);
+            font-family: 'Orbitron', monospace;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .count-btn:hover {
+            border-color: var(--accent);
+        }
+
+        .count-btn.selected {
+            border-color: var(--accent);
+            background: rgba(0, 255, 170, 0.1);
+            box-shadow: 0 0 15px rgba(0, 255, 170, 0.2);
+        }
+
+        .btn-start {
+            width: 100%;
+            margin-top: 20px;
+            padding: 15px;
+        }
+
+        /* Particles Container */
+        #particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        /* Status Message */
+        .status-message {
+            font-family: 'Orbitron', monospace;
+            font-size: 1rem;
+            text-align: center;
+            padding: 12px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            color: var(--accent);
+            letter-spacing: 0.1em;
+        }
+
+        .status-message.danger {
+            color: var(--danger);
+            border-color: var(--danger);
+        }
+
+        .status-message.warning {
+            color: var(--warning);
+            border-color: var(--warning);
+        }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 2px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-container"></div>
+    <div class="grid-overlay"></div>
+    <div id="particles"></div>
+
+    <!-- Setup Screen -->
+    <div class="setup-screen" id="setupScreen">
+        <div class="setup-content">
+            <h2 class="setup-title">FLIP 7</h2>
+            <div class="setup-option">
+                <label class="setup-label">NUMBER OF PLAYERS</label>
+                <div class="player-count-btns">
+                    <button class="count-btn" data-count="2">2</button>
+                    <button class="count-btn" data-count="3">3</button>
+                    <button class="count-btn selected" data-count="4">4</button>
+                    <button class="count-btn" data-count="5">5</button>
+                    <button class="count-btn" data-count="6">6</button>
+                </div>
+            </div>
+            <button class="btn btn-flip btn-start" id="startBtn">START GAME</button>
+        </div>
+    </div>
+
+    <!-- Main Game -->
+    <header>
+        <h1>FLIP 7</h1>
+    </header>
+
+    <div class="game-container">
+        <!-- Players Panel -->
+        <div class="players-panel">
+            <div class="panel-title">Players</div>
+            <div id="playersList"></div>
+            <button class="btn btn-new-game" id="newGameBtn" style="width: 100%; margin-top: 10px;">New Game</button>
+        </div>
+
+        <!-- Game Area -->
+        <div class="game-area">
+            <div class="deck-area">
+                <div>
+                    <div class="deck-stack" id="deckStack">
+                        <div class="deck-card" style="top: 4px; left: 2px; opacity: 0.5;"></div>
+                        <div class="deck-card" style="top: 2px; left: 1px; opacity: 0.7;"></div>
+                        <div class="deck-card"></div>
+                    </div>
+                    <div class="deck-label">DRAW PILE</div>
+                    <div class="deck-count" id="deckCount">Cards: 0</div>
+                </div>
+            </div>
+
+            <div class="active-cards" id="activeCards">
+                <div class="active-cards-label">CURRENT HAND</div>
+            </div>
+
+            <div class="status-message" id="statusMessage">Your Turn</div>
+
+            <div class="action-buttons" id="actionButtons">
+                <button class="btn btn-flip" id="flipBtn">FLIP</button>
+                <button class="btn btn-bank" id="bankBtn" disabled>BANK</button>
+            </div>
+        </div>
+
+        <!-- Message Log -->
+        <div class="message-log">
+            <div class="panel-title">Game Log</div>
+            <div id="logEntries"></div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== GAME CONFIG ====================
+        const CONFIG = {
+            TARGET_SCORE: 200,
+            AI_DELAY_MIN: 800,
+            AI_DELAY_MAX: 1500,
+            ANIMATION_DURATION: 600
+        };
+
+        // ==================== CARD DEFINITIONS ====================
+        const CARD_TYPES = {
+            NUMBER: 'number',
+            FREEZE: 'freeze',
+            SECOND_CHANCE: 'secondChance'
+        };
+
+        function createDeck() {
+            const deck = [];
+
+            // Numbers 1-12, 4 of each
+            for (let num = 1; num <= 12; num++) {
+                for (let i = 0; i < 4; i++) {
+                    deck.push({ type: CARD_TYPES.NUMBER, value: num });
+                }
+            }
+
+            // Special cards
+            for (let i = 0; i < 3; i++) {
+                deck.push({ type: CARD_TYPES.FREEZE, value: 'FREEZE' });
+            }
+            for (let i = 0; i < 3; i++) {
+                deck.push({ type: CARD_TYPES.SECOND_CHANCE, value: '2ND CHANCE' });
+            }
+
+            return shuffleDeck(deck);
+        }
+
+        function shuffleDeck(deck) {
+            const shuffled = [...deck];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // ==================== AI NAMES ====================
+        const AI_NAMES = ['NOVA', 'CIPHER', 'PHANTOM', 'VORTEX', 'NEON', 'GLITCH'];
+
+        // ==================== GAME STATE ====================
+        let gameState = {
+            players: [],
+            deck: [],
+            currentPlayerIndex: 0,
+            currentRoundCards: [],
+            phase: 'setup', // setup, playing, roundEnd, gameEnd
+            playerCount: 4,
+            isProcessing: false
+        };
+
+        // ==================== DOM ELEMENTS ====================
+        const elements = {
+            setupScreen: document.getElementById('setupScreen'),
+            playersList: document.getElementById('playersList'),
+            activeCards: document.getElementById('activeCards'),
+            deckCount: document.getElementById('deckCount'),
+            statusMessage: document.getElementById('statusMessage'),
+            flipBtn: document.getElementById('flipBtn'),
+            bankBtn: document.getElementById('bankBtn'),
+            newGameBtn: document.getElementById('newGameBtn'),
+            startBtn: document.getElementById('startBtn'),
+            logEntries: document.getElementById('logEntries'),
+            particles: document.getElementById('particles')
+        };
+
+        // ==================== PARTICLE SYSTEM ====================
+        function createParticles(x, y, color, count = 20) {
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (prefersReducedMotion) return;
+
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+
+                const size = Math.random() * 8 + 4;
+                const angle = (Math.PI * 2 * i) / count;
+                const velocity = Math.random() * 100 + 50;
+                const vx = Math.cos(angle) * velocity;
+                const vy = Math.sin(angle) * velocity;
+
+                particle.style.cssText = `
+                    left: ${x}px;
+                    top: ${y}px;
+                    width: ${size}px;
+                    height: ${size}px;
+                    background: ${color};
+                    box-shadow: 0 0 ${size * 2}px ${color};
+                `;
+
+                elements.particles.appendChild(particle);
+
+                let posX = x;
+                let posY = y;
+                let opacity = 1;
+                let frame = 0;
+
+                function animate() {
+                    frame++;
+                    posX += vx * 0.02;
+                    posY += vy * 0.02 + frame * 0.1;
+                    opacity -= 0.02;
+
+                    particle.style.left = posX + 'px';
+                    particle.style.top = posY + 'px';
+                    particle.style.opacity = opacity;
+
+                    if (opacity > 0) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        particle.remove();
+                    }
+                }
+
+                requestAnimationFrame(animate);
+            }
+        }
+
+        // ==================== UI FUNCTIONS ====================
+        function renderPlayers() {
+            elements.playersList.innerHTML = '';
+
+            gameState.players.forEach((player, index) => {
+                const isActive = index === gameState.currentPlayerIndex;
+                const card = document.createElement('div');
+                card.className = `player-card ${isActive ? 'active' : ''} ${player.busted ? 'busted' : ''} ${player.isWinner ? 'winner' : ''}`;
+
+                card.innerHTML = `
+                    <div class="player-name">
+                        ${player.name}
+                        ${!player.isAI ? '<span class="you-badge">YOU</span>' : ''}
+                    </div>
+                    <div class="player-score">${player.totalScore}</div>
+                    <div class="player-round">
+                        Round: <strong>${player.currentRoundScore}</strong> pts
+                        ${player.hasSecondChance ? '<span style="color: var(--warning);"> [2ND]</span>' : ''}
+                    </div>
+                `;
+
+                elements.playersList.appendChild(card);
+            });
+        }
+
+        function renderActiveCards() {
+            // Keep the label
+            elements.activeCards.innerHTML = '<div class="active-cards-label">CURRENT HAND</div>';
+
+            gameState.currentRoundCards.forEach((card, index) => {
+                const cardEl = createCardElement(card, index);
+                elements.activeCards.appendChild(cardEl);
+
+                // Trigger flip animation after a small delay
+                setTimeout(() => {
+                    cardEl.classList.add('flipping');
+                }, 50 + index * 50);
+            });
+        }
+
+        function createCardElement(card, index) {
+            const cardEl = document.createElement('div');
+            cardEl.className = 'card';
+            cardEl.dataset.index = index;
+
+            let valueClass = '';
+            let displayValue = card.value;
+            let subtitle = '';
+
+            if (card.type === CARD_TYPES.NUMBER) {
+                valueClass = 'number';
+                subtitle = card.value;
+            } else if (card.type === CARD_TYPES.FREEZE) {
+                valueClass = 'freeze special';
+                displayValue = 'FREEZE';
+                subtitle = 'AUTO-BANK';
+            } else if (card.type === CARD_TYPES.SECOND_CHANCE) {
+                valueClass = 'second-chance special';
+                displayValue = '2ND';
+                subtitle = 'CHANCE';
+            }
+
+            cardEl.innerHTML = `
+                <div class="card-inner">
+                    <div class="card-back"></div>
+                    <div class="card-front">
+                        <span class="card-number-badge">#${index + 1}</span>
+                        <span class="card-value ${valueClass}">${displayValue}</span>
+                        <span class="card-subtitle">${subtitle}</span>
+                    </div>
+                </div>
+                <div class="duplicate-overlay">DUP!</div>
+            `;
+
+            return cardEl;
+        }
+
+        function updateDeckCount() {
+            elements.deckCount.textContent = `Cards: ${gameState.deck.length}`;
+        }
+
+        function setStatus(message, type = '') {
+            elements.statusMessage.textContent = message;
+            elements.statusMessage.className = 'status-message ' + type;
+        }
+
+        function addLog(message, type = '') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = message;
+            elements.logEntries.insertBefore(entry, elements.logEntries.firstChild);
+
+            // Keep only last 30 entries for mobile performance
+            while (elements.logEntries.children.length > 30) {
+                elements.logEntries.removeChild(elements.logEntries.lastChild);
+            }
+        }
+
+        // ==================== GAME LOGIC ====================
+        function initGame() {
+            // Create players
+            gameState.players = [];
+            gameState.players.push({
+                name: 'PLAYER',
+                isAI: false,
+                totalScore: 0,
+                currentRoundScore: 0,
+                hasSecondChance: false,
+                busted: false,
+                isWinner: false
+            });
+
+            const shuffledNames = shuffleDeck([...AI_NAMES]);
+            for (let i = 1; i < gameState.playerCount; i++) {
+                gameState.players.push({
+                    name: shuffledNames[i - 1],
+                    isAI: true,
+                    totalScore: 0,
+                    currentRoundScore: 0,
+                    hasSecondChance: false,
+                    busted: false,
+                    isWinner: false
+                });
+            }
+
+            // Create deck
+            gameState.deck = createDeck();
+
+            // Reset state
+            gameState.currentPlayerIndex = 0;
+            gameState.currentRoundCards = [];
+            gameState.phase = 'playing';
+            gameState.isProcessing = false;
+
+            // Clear log
+            elements.logEntries.innerHTML = '';
+
+            // Render
+            renderPlayers();
+            renderActiveCards();
+            updateDeckCount();
+
+            setStatus('Your Turn - Flip or Bank');
+            updateButtons();
+
+            addLog('Game started! First to 200 wins.');
+        }
+
+        function updateButtons() {
+            const player = gameState.players[gameState.currentPlayerIndex];
+            const isHuman = player && !player.isAI;
+            const canBank = gameState.currentRoundCards.some(c => c.type === CARD_TYPES.NUMBER);
+
+            elements.flipBtn.disabled = !isHuman || gameState.isProcessing || gameState.phase !== 'playing';
+            elements.bankBtn.disabled = !isHuman || gameState.isProcessing || !canBank || gameState.phase !== 'playing';
+        }
+
+        function drawCard() {
+            if (gameState.deck.length === 0) {
+                gameState.deck = createDeck();
+                addLog('Deck reshuffled!');
+            }
+            return gameState.deck.pop();
+        }
+
+        function calculateRoundScore() {
+            return gameState.currentRoundCards
+                .filter(c => c.type === CARD_TYPES.NUMBER)
+                .reduce((sum, c) => sum + c.value, 0);
+        }
+
+        function hasDuplicateNumber(card) {
+            if (card.type !== CARD_TYPES.NUMBER) return false;
+            return gameState.currentRoundCards.some(c =>
+                c.type === CARD_TYPES.NUMBER && c.value === card.value
+            );
+        }
+
+        function flipCard() {
+            if (gameState.isProcessing || gameState.phase !== 'playing') return;
+
+            const player = gameState.players[gameState.currentPlayerIndex];
+            if (player.busted) {
+                nextTurn();
+                return;
+            }
+
+            gameState.isProcessing = true;
+
+            const card = drawCard();
+            updateDeckCount();
+
+            // Check for duplicate BEFORE adding to cards
+            const isDuplicate = hasDuplicateNumber(card);
+
+            // Add card to current round
+            gameState.currentRoundCards.push(card);
+
+            // Create card element and animate
+            const cardEl = createCardElement(card, gameState.currentRoundCards.length - 1);
+            if (isDuplicate) {
+                cardEl.classList.add('duplicate');
+            }
+            elements.activeCards.appendChild(cardEl);
+
+            setTimeout(() => {
+                cardEl.classList.add('flipping');
+            }, 50);
+
+            // Particle effect
+            const rect = cardEl.getBoundingClientRect();
+            setTimeout(() => {
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                if (card.type === CARD_TYPES.FREEZE) {
+                    createParticles(centerX, centerY, '#00ddff', 30);
+                } else if (card.type === CARD_TYPES.SECOND_CHANCE) {
+                    createParticles(centerX, centerY, '#ffaa00', 30);
+                } else if (isDuplicate) {
+                    createParticles(centerX, centerY, '#ff3366', 40);
+                } else {
+                    createParticles(centerX, centerY, '#00ffaa', 15);
+                }
+            }, CONFIG.ANIMATION_DURATION / 2);
+
+            // Handle card effects
+            setTimeout(() => {
+                handleCardEffect(card, player, isDuplicate);
+            }, CONFIG.ANIMATION_DURATION);
+        }
+
+        function handleCardEffect(card, player, isDuplicate) {
+            if (card.type === CARD_TYPES.FREEZE) {
+                // Freeze: auto-bank
+                const score = calculateRoundScore();
+                player.totalScore += score;
+                player.currentRoundScore = score;
+
+                addLog(`${player.name} drew FREEZE! Banked ${score} points.`, 'special');
+
+                if (player.totalScore >= CONFIG.TARGET_SCORE) {
+                    endGame(player);
+                    return;
+                }
+
+                setTimeout(() => endTurn(), 500);
+                return;
+            }
+
+            if (card.type === CARD_TYPES.SECOND_CHANCE) {
+                player.hasSecondChance = true;
+                player.currentRoundScore = calculateRoundScore();
+                addLog(`${player.name} got Second Chance!`, 'special');
+
+                renderPlayers();
+                gameState.isProcessing = false;
+                updateButtons();
+
+                if (player.isAI) {
+                    setTimeout(aiTurn, CONFIG.AI_DELAY_MIN + Math.random() * CONFIG.AI_DELAY_MAX);
+                }
+                return;
+            }
+
+            // Number card
+            if (isDuplicate) {
+                // Check for second chance
+                if (player.hasSecondChance) {
+                    player.hasSecondChance = false;
+
+                    // Remove the duplicate card from hand
+                    gameState.currentRoundCards.pop();
+                    const dupCardEl = elements.activeCards.querySelector('.card:last-child');
+                    if (dupCardEl) {
+                        dupCardEl.remove();
+                    }
+
+                    addLog(`${player.name} used Second Chance!`, 'special');
+                    player.currentRoundScore = calculateRoundScore();
+                    renderPlayers();
+                    gameState.isProcessing = false;
+                    updateButtons();
+
+                    if (player.isAI) {
+                        setTimeout(aiTurn, CONFIG.AI_DELAY_MIN + Math.random() * CONFIG.AI_DELAY_MAX);
+                    }
+                    return;
+                }
+
+                // BUST!
+                player.busted = true;
+                player.currentRoundScore = 0;
+                setStatus(`${player.name} BUSTED!`, 'danger');
+                addLog(`${player.name} BUSTED with duplicate ${card.value}!`, 'bust');
+
+                renderPlayers();
+                setTimeout(() => nextTurn(), 1000);
+                return;
+            }
+
+            // Valid number card
+            player.currentRoundScore = calculateRoundScore();
+            renderPlayers();
+
+            // Check for FLIP 7 bonus
+            const uniqueNumbers = gameState.currentRoundCards
+                .filter(c => c.type === CARD_TYPES.NUMBER)
+                .map(c => c.value);
+
+            if (uniqueNumbers.length >= 7 && new Set(uniqueNumbers).size >= 7) {
+                const bonus = 15;
+                player.currentRoundScore += bonus;
+                addLog(`${player.name} FLIP 7 BONUS! +${bonus} points!`, 'special');
+                createParticles(window.innerWidth / 2, window.innerHeight / 2, '#ffaa00', 50);
+            }
+
+            setStatus(`${player.name}: ${player.currentRoundScore} pts this round`);
+            gameState.isProcessing = false;
+            updateButtons();
+
+            if (player.isAI) {
+                setTimeout(aiTurn, CONFIG.AI_DELAY_MIN + Math.random() * CONFIG.AI_DELAY_MAX);
+            }
+        }
+
+        function bankPoints() {
+            if (gameState.isProcessing || gameState.phase !== 'playing') return;
+
+            gameState.isProcessing = true; // Lock input during banking animation
+
+            const player = gameState.players[gameState.currentPlayerIndex];
+            const score = calculateRoundScore();
+
+            player.totalScore += score;
+            player.currentRoundScore = score;
+
+            addLog(`${player.name} banked ${score} points! Total: ${player.totalScore}`, 'bank');
+
+            // Particle celebration
+            const rect = elements.bankBtn.getBoundingClientRect();
+            createParticles(rect.left + rect.width / 2, rect.top, '#ffaa00', 30);
+
+            if (player.totalScore >= CONFIG.TARGET_SCORE) {
+                endGame(player);
+                return;
+            }
+
+            endTurn();
+        }
+
+        function endTurn() {
+            gameState.currentRoundCards = [];
+            renderActiveCards();
+            nextTurn();
+        }
+
+        function nextTurn() {
+            // FIX: Ensure processing flag is always reset when moving to the next player
+            gameState.isProcessing = false;
+
+            gameState.currentPlayerIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length;
+
+            // Reset busted status for new round
+            const allBusted = gameState.players.every(p => p.busted);
+            if (allBusted) {
+                gameState.players.forEach(p => p.busted = false);
+                gameState.currentRoundCards = [];
+                renderActiveCards();
+            }
+
+            const player = gameState.players[gameState.currentPlayerIndex];
+
+            // Reset round state for new player
+            if (!player.busted) {
+                gameState.currentRoundCards = [];
+                player.currentRoundScore = 0;
+                renderActiveCards();
+            }
+
+            renderPlayers();
+
+            if (player.busted) {
+                setStatus(`${player.name} BUSTED - Skipping...`);
+                setTimeout(() => nextTurn(), 1000);
+                return;
+            }
+
+            if (player.isAI) {
+                setStatus(`${player.name} is thinking...`);
+                updateButtons();
+                setTimeout(aiTurn, CONFIG.AI_DELAY_MIN + Math.random() * CONFIG.AI_DELAY_MAX);
+            } else {
+                setStatus('Your Turn - Flip or Bank');
+                updateButtons();
+            }
+        }
+
+        // ==================== AI LOGIC ====================
+        function aiTurn() {
+            if (gameState.phase !== 'playing') return;
+
+            const player = gameState.players[gameState.currentPlayerIndex];
+            if (!player.isAI || gameState.isProcessing) return;
+
+            const score = calculateRoundScore();
+            const uniqueNumbers = gameState.currentRoundCards
+                .filter(c => c.type === CARD_TYPES.NUMBER)
+                .map(c => c.value);
+
+            // AI decision factors
+            const cardsInHand = uniqueNumbers.length;
+            const riskLevel = player.hasSecondChance ? 0.3 : 0.5;
+            const pointsNeeded = CONFIG.TARGET_SCORE - player.totalScore;
+
+            // More aggressive when behind
+            const aggressiveness = Math.min(1, pointsNeeded / 100);
+
+            // Calculate bust probability (simplified)
+            // Each number card drawn reduces safe cards
+            const bustRisk = cardsInHand * 0.08;
+
+            // Decision
+            const shouldBank = score >= 15 && (
+                bustRisk > riskLevel - aggressiveness * 0.2 ||
+                score >= 25 ||
+                (player.totalScore + score >= CONFIG.TARGET_SCORE)
+            );
+
+            // Also bank if close to winning
+            const closeToWin = player.totalScore + score >= CONFIG.TARGET_SCORE;
+
+            if (shouldBank || closeToWin) {
+                bankPoints();
+            } else {
+                flipCard();
+            }
+        }
+
+        // ==================== GAME END ====================
+        function endGame(winner) {
+            gameState.phase = 'gameEnd';
+            winner.isWinner = true;
+
+            setStatus(`${winner.name} WINS!`, 'warning');
+            addLog(`${winner.name} WINS with ${winner.totalScore} points!`, 'win');
+
+            // Celebration particles
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    createParticles(
+                        Math.random() * window.innerWidth,
+                        Math.random() * window.innerHeight,
+                        ['#00ffaa', '#ff00aa', '#ffaa00'][Math.floor(Math.random() * 3)],
+                        30
+                    );
+                }, i * 200);
+            }
+
+            renderPlayers();
+            updateButtons();
+        }
+
+        // ==================== EVENT LISTENERS ====================
+        document.querySelectorAll('.count-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                gameState.playerCount = parseInt(btn.dataset.count);
+            });
+        });
+
+        elements.startBtn.addEventListener('click', () => {
+            elements.setupScreen.classList.add('hidden');
+            initGame();
+        });
+
+        elements.flipBtn.addEventListener('click', flipCard);
+        elements.bankBtn.addEventListener('click', bankPoints);
+        elements.newGameBtn.addEventListener('click', () => {
+            gameState.phase = 'setup';
+            elements.setupScreen.classList.remove('hidden');
+        });
+
+        // Keyboard support
+        document.addEventListener('keydown', (e) => {
+            if (gameState.phase !== 'playing') return;
+
+            const player = gameState.players[gameState.currentPlayerIndex];
+            if (player.isAI) return;
+
+            if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                flipCard();
+            } else if (e.key === 'b' || e.key === 'B') {
+                bankPoints();
+            }
+        });
+
+        // Initial setup
+        updateButtons();
+    </script>
+</body>
+
+</html>
