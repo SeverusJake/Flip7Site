@@ -179,6 +179,11 @@
             opacity: 0.6;
         }
 
+        .player-card.banked {
+            border-color: var(--success);
+            opacity: 0.8;
+        }
+
         .player-card.winner {
             border-color: var(--warning);
             animation: winPulse 1s ease-in-out infinite;
@@ -211,6 +216,23 @@
             color: var(--bg);
             padding: 2px 5px;
             border-radius: 4px;
+        }
+
+        .player-name .status-badge {
+            font-size: 0.55rem;
+            padding: 2px 5px;
+            border-radius: 4px;
+            margin-left: auto;
+        }
+
+        .status-badge.busted {
+            background: var(--danger);
+            color: white;
+        }
+
+        .status-badge.banked {
+            background: var(--success);
+            color: black;
         }
 
         .player-score {
@@ -604,6 +626,15 @@
             background: rgba(255, 170, 0, 0.2);
         }
 
+        .log-entry.round {
+            border-left-color: var(--accent2);
+            background: rgba(255, 0, 170, 0.1);
+            font-weight: bold;
+            text-align: center;
+            border-left: none;
+            border-bottom: 2px solid var(--accent2);
+        }
+
         @keyframes slideIn {
             from {
                 opacity: 0;
@@ -987,12 +1018,29 @@
             gameState.players.forEach((player, index) => {
                 const isActive = index === gameState.currentPlayerIndex;
                 const card = document.createElement('div');
-                card.className = `player-card ${isActive ? 'active' : ''} ${player.busted ? 'busted' : ''} ${player.isWinner ? 'winner' : ''}`;
+
+                let cardClass = 'player-card';
+                let statusBadge = '';
+
+                if (player.isWinner) {
+                    cardClass += ' winner';
+                } else if (player.roundStatus === 'busted') {
+                    cardClass += ' busted';
+                    statusBadge = '<span class="status-badge busted">BUST</span>';
+                } else if (player.roundStatus === 'banked') {
+                    cardClass += ' banked';
+                    statusBadge = '<span class="status-badge banked">BANK</span>';
+                } else if (isActive) {
+                    cardClass += ' active';
+                }
+
+                card.className = cardClass;
 
                 card.innerHTML = `
                     <div class="player-name">
                         ${player.name}
                         ${!player.isAI ? '<span class="you-badge">YOU</span>' : ''}
+                        ${statusBadge}
                     </div>
                     <div class="player-score">${player.totalScore}</div>
                     <div class="player-round">
@@ -1088,7 +1136,7 @@
                 totalScore: 0,
                 currentRoundScore: 0,
                 hasSecondChance: false,
-                busted: false,
+                roundStatus: 'playing', // playing, busted, banked
                 isWinner: false
             });
 
@@ -1100,7 +1148,7 @@
                     totalScore: 0,
                     currentRoundScore: 0,
                     hasSecondChance: false,
-                    busted: false,
+                    roundStatus: 'playing',
                     isWinner: false
                 });
             }
@@ -1162,7 +1210,7 @@
             if (gameState.isProcessing || gameState.phase !== 'playing') return;
 
             const player = gameState.players[gameState.currentPlayerIndex];
-            if (player.busted) {
+            if (player.roundStatus !== 'playing') {
                 nextTurn();
                 return;
             }
@@ -1217,6 +1265,7 @@
                 const score = calculateRoundScore();
                 player.totalScore += score;
                 player.currentRoundScore = score;
+                player.roundStatus = 'banked';
 
                 addLog(`${player.name} drew FREEZE! Banked ${score} points.`, 'special');
 
@@ -1225,7 +1274,11 @@
                     return;
                 }
 
-                setTimeout(() => endTurn(), 500);
+                setTimeout(() => {
+                    gameState.currentRoundCards = [];
+                    renderActiveCards();
+                    nextTurn();
+                }, 500);
                 return;
             }
 
@@ -1270,7 +1323,7 @@
                 }
 
                 // BUST!
-                player.busted = true;
+                player.roundStatus = 'busted';
                 player.currentRoundScore = 0;
                 setStatus(`${player.name} BUSTED!`, 'danger');
                 addLog(`${player.name} BUSTED with duplicate ${card.value}!`, 'bust');
@@ -1315,6 +1368,7 @@
 
             player.totalScore += score;
             player.currentRoundScore = score;
+            player.roundStatus = 'banked';
 
             addLog(`${player.name} banked ${score} points! Total: ${player.totalScore}`, 'bank');
 
@@ -1327,46 +1381,83 @@
                 return;
             }
 
-            endTurn();
-        }
-
-        function endTurn() {
             gameState.currentRoundCards = [];
             renderActiveCards();
             nextTurn();
         }
 
         function nextTurn() {
-            // FIX: Ensure processing flag is always reset when moving to the next player
             gameState.isProcessing = false;
 
-            gameState.currentPlayerIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length;
+            // Find next player who is still 'playing'
+            let nextIdx = (gameState.currentPlayerIndex + 1) % gameState.players.length;
+            let foundPlayer = false;
+            let loopCount = 0;
 
-            // Reset busted status for new round
-            const allBusted = gameState.players.every(p => p.busted);
-            if (allBusted) {
-                gameState.players.forEach(p => p.busted = false);
-                gameState.currentRoundCards = [];
-                renderActiveCards();
+            // Loop through players to find one that is still playing
+            while (loopCount < gameState.players.length) {
+                const p = gameState.players[nextIdx];
+                if (p.roundStatus === 'playing') {
+                    gameState.currentPlayerIndex = nextIdx;
+                    foundPlayer = true;
+                    break;
+                }
+                nextIdx = (nextIdx + 1) % gameState.players.length;
+                loopCount++;
+            }
+
+            if (!foundPlayer) {
+                // Everyone has finished (busted or banked)
+                endRound();
+                return;
             }
 
             const player = gameState.players[gameState.currentPlayerIndex];
 
-            // Reset round state for new player
-            if (!player.busted) {
-                gameState.currentRoundCards = [];
-                player.currentRoundScore = 0;
-                renderActiveCards();
-            }
-
+            // Clear cards for the new player
+            gameState.currentRoundCards = [];
+            renderActiveCards();
             renderPlayers();
 
-            if (player.busted) {
-                setStatus(`${player.name} BUSTED - Skipping...`);
-                setTimeout(() => nextTurn(), 1000);
+            if (player.isAI) {
+                setStatus(`${player.name} is thinking...`);
+                updateButtons();
+                setTimeout(aiTurn, CONFIG.AI_DELAY_MIN + Math.random() * CONFIG.AI_DELAY_MAX);
+            } else {
+                setStatus('Your Turn - Flip or Bank');
+                updateButtons();
+            }
+        }
+
+        function endRound() {
+            addLog('--- ROUND ENDED ---', 'round');
+
+            // Check for winner
+            const winner = gameState.players.find(p => p.totalScore >= CONFIG.TARGET_SCORE);
+            if (winner) {
+                endGame(winner);
                 return;
             }
 
+            // Start new round
+            startNewRound();
+        }
+
+        function startNewRound() {
+            addLog('New Round Started!', 'round');
+
+            gameState.players.forEach(p => {
+                p.roundStatus = 'playing';
+                p.currentRoundScore = 0;
+            });
+
+            gameState.currentRoundCards = [];
+            gameState.currentPlayerIndex = 0; // Reset to first player
+
+            renderPlayers();
+            renderActiveCards();
+
+            const player = gameState.players[0];
             if (player.isAI) {
                 setStatus(`${player.name} is thinking...`);
                 updateButtons();
@@ -1382,7 +1473,7 @@
             if (gameState.phase !== 'playing') return;
 
             const player = gameState.players[gameState.currentPlayerIndex];
-            if (!player.isAI || gameState.isProcessing) return;
+            if (!player.isAI || gameState.isProcessing || player.roundStatus !== 'playing') return;
 
             const score = calculateRoundScore();
             const uniqueNumbers = gameState.currentRoundCards
